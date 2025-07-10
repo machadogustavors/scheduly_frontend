@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from 'react-toastify';
 import { Router } from "./router";
-
+import { registerServiceWorker } from "./lib/pushNotifications";
 
 
 const queryClient = new QueryClient({
@@ -14,6 +15,10 @@ const queryClient = new QueryClient({
 })
 
 function App() {
+
+  useEffect(() => {
+    registerServiceWorker();
+  }, [])
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
+import { askNotificationPermission } from '../../lib/pushNotifications';
 
 export function Header() {
+  const enableNotifications = async () => {
+    await askNotificationPermission();
+  };
   return (
     <header className="w-full shadow-md border-b border-gray-100">
       <div className="mx-auto px-4 py-4 flex items-center justify-between">
@@ -11,6 +15,9 @@ export function Header() {
           </svg>
           <span className="text-2xl font-bold text-primary">Scheduly</span>
         </Link>
+        <button onClick={enableNotifications}>
+          Ativar notificações
+        </button>
       </div>
     </header>
   );
