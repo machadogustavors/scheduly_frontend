@@ -13,7 +13,7 @@ import type { Appointment } from "../../lib/types";
 import "./components/animations.css";
 
 export function HomePage() {
-  const { appointments = [], refetch, isLoading } = useData();
+  const { appointments = [], refetch, isLoading, error } = useData();
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [view, setView] = useState<"week" | "month">("week");
@@ -159,6 +159,20 @@ export function HomePage() {
         {isLoading && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
             <Loader />
+          </div>
+        )}
+        {!!error && !isLoading && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-white">
+            <div className="text-center p-8">
+              <div className="text-red-500 text-xl mb-4">⚠️ Erro de Conexão</div>
+              <p className="text-gray-600 mb-4">Não foi possível carregar os compromissos.</p>
+              <button 
+                onClick={() => refetch()} 
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Tentar Novamente
+              </button>
+            </div>
           </div>
         )}
         <div className="relative w-full h-full">
