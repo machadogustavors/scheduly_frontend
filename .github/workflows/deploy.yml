@@ -1,4 +1,4 @@
-name: Deploy WM Manager Frontend to S3
+name: Deploy Scheduly Frontend to S3
 
 on:
   push:

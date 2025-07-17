@@ -22,8 +22,17 @@ export const WeekCalendar: React.FC<WeekCalendarProps> = ({
     return `${i.toString().padStart(2, "0")}:00`;
   });
 
+  const getCurrentDayIndex = () => {
+    const today = new Date();
+    return weekDays.findIndex(day => 
+      day.toDateString() === today.toDateString()
+    );
+  };
 
-  const [selectedDayIdx, setSelectedDayIdx] = useState(0);
+  const [selectedDayIdx, setSelectedDayIdx] = useState(() => {
+    const currentDayIndex = getCurrentDayIndex();
+    return currentDayIndex >= 0 ? currentDayIndex : 0;
+  });
 
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" ? window.innerWidth < 930 : false
@@ -36,6 +45,13 @@ export const WeekCalendar: React.FC<WeekCalendarProps> = ({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    const currentDayIndex = getCurrentDayIndex();
+    if (currentDayIndex >= 0) {
+      setSelectedDayIdx(currentDayIndex);
+    }
+  }, [weekDays]);
 
 
   const daysToShow = isMobile ? [weekDays[selectedDayIdx]] : weekDays;
