@@ -56,33 +56,29 @@ jobs:
             --include "service-worker.js" \
             --include "manifest.json"
 
-      - name: Configure S3 bucket for static website hosting
+      - name: Configure S3 bucket policy
         run: |
-          aws s3 website s3://${{ secrets.AWS_S3_BUCKET }} --index-document index.html --error-document index.html
-          
-          aws s3api put-bucket-cors --bucket ${{ secrets.AWS_S3_BUCKET }} --cors-configuration '{
-            "CORSRules": [
-              {
-                "AllowedOrigins": ["*"],
-                "AllowedMethods": ["GET", "HEAD"],
-                "AllowedHeaders": ["*"],
-                "MaxAgeSeconds": 3000
-              }
-            ]
-          }'
-          
           aws s3api put-bucket-policy --bucket ${{ secrets.AWS_S3_BUCKET }} --policy '{
             "Version": "2012-10-17",
             "Statement": [
               {
-                "Sid": "PublicReadGetObject",
+                "Sid": "AllowCloudFrontAccess",
                 "Effect": "Allow",
-                "Principal": "*",
+                "Principal": {
+                  "Service": "cloudfront.amazonaws.com"
+                },
                 "Action": "s3:GetObject",
-                "Resource": "arn:aws:s3:::${{ secrets.AWS_S3_BUCKET }}/*"
+                "Resource": "arn:aws:s3:::${{ secrets.AWS_S3_BUCKET }}/*",
+                "Condition": {
+                  "StringEquals": {
+                    "AWS:SourceArn": "arn:aws:cloudfront::${{ secrets.AWS_ACCOUNT_ID }}:distribution/${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
+                  }
+                }
               }
             ]
           }'
           
-          aws s3api put-public-access-block --bucket ${{ secrets.AWS_S3_BUCKET }} --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
           
