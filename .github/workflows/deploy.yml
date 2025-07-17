@@ -19,6 +19,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install terser
+        run: npm install --save-dev terser
+
       - name: Create production environment file
         run: |
           echo "VITE_API_URL=https://60eoov8mmg.execute-api.sa-east-1.amazonaws.com/prod/appointments" > .env.production
